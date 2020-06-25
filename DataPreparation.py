@@ -25,4 +25,5 @@ def preProcessData(DataFrame):
         for col in dataOfCountry:
             rows.append(dataOfCountry[col].mean())
         procData.loc[Country] = rows
+        procData.index.name='country'
     return procData

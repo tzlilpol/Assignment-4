@@ -5,7 +5,13 @@ from tkinter.filedialog import askopenfilename
 import xlrd
 import numpy as np
 import pandas as pd
+from PIL import ImageTk
+from PIL import Image
+
 from DataPreparation import preProcessData
+from kmeans import *
+
+
 class Application:
     def __init__(self, master):
         self.master = master
@@ -13,14 +19,16 @@ class Application:
 
         self.pathLabel = Label(master, text='File Path')
         self.filePath = StringVar()
+        self.nClusters = StringVar()
+        self.nInit = StringVar()
 
         self.browseInput=Entry(master,width=50,borderwidth=1, textvariable=self.filePath)
         self.browseInput.grid(row=1,column=0)
 
-        self.clustersInput=Entry(master,width=30,borderwidth=1)
+        self.clustersInput=Entry(master,width=30,borderwidth=1, textvariable=self.nClusters)
         self.clustersInput.grid(row=3,column=0)
 
-        self.runsInput=Entry(master,width=30,borderwidth=1)
+        self.runsInput=Entry(master,width=30,borderwidth=1, textvariable=self.nInit)
         self.runsInput.grid(row=5,column=0)
 
         # Create a Label Widget
@@ -42,10 +50,26 @@ class Application:
         self.dataSet=pd.read_excel(self.filePath.get())
         print(self.dataSet)
         self.DataFrame = preProcessData(self.dataSet)
+        print(self.DataFrame)
         messagebox.showinfo(title='K Means Clustering', message="Preprocessing completed successfully!")
 
     def buildModal(self):
-        lbl = Label(self.master, text="Build Modal...").grid(row=7, column=1)
+        self.lbl = Label(self.master, text="Build Modal...")
+        self.lbl.grid(row=7, column=1)
+        kmean= kMeans()
+        kmean.k_means_modeling(self.DataFrame, self.nClusters.get(), self.nInit.get())
+        print(self.DataFrame)
+        kmean.scatter(self.DataFrame, self.filePath.get())
+        kmean.horoplethMap(self.DataFrame, self.filePath.get())
+        self.lbl.destroy()
+        scatterImg = ImageTk.PhotoImage(Image.open(os.path.dirname(self.filePath.get())+'/scatter.png'))
+        self.scatter=Label(self.master, image = scatterImg)
+        self.scatter.grid(row=8,column=1)
+        self.scatter.image = scatterImg
+        choroplethImg = ImageTk.PhotoImage(Image.open(os.path.dirname(self.filePath.get()) + '/choropleth.png'))
+        self.choropleth = Label(self.master, image=choroplethImg)
+        self.choropleth.grid(row=8, column=0)
+        self.choropleth.image = choroplethImg
 
 root = Tk()
 my_gui=Application(root)
