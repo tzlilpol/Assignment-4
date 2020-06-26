@@ -38,22 +38,37 @@ class Application:
         #Create a buttons
         self.browseBtn=Button(master,text="Browse", command=lambda: self.openFile()).grid(row=1,column=1)
         self.preProcessBtn=Button(master,text="Pre-process", command=lambda:self.preProcessData()).grid(row=6,column=0)
-        self.clusterBtn=Button(master,text="Cluster", command=lambda:self.buildModal()).grid(row=6,column=1)
+        self.clusterBtn=Button(master,text="Cluster", command=lambda:self.buildModal(), state=DISABLED)
+        self.clusterBtn.grid(row=6,column=1)
         self.dataSet = None
         self.DataFrame = None
 
-         # Functions
+    def clustersInputValidation(self,input):
+        if not input:
+            self.clusterError = Label(self.master, text="Cannot be empty", fg='red')
+            self.clusterError.grid(row=3, column=1)
+        elif(int(input)<2):
+            self.clusterError = Label(self.master, text="Cannot be empty", fg='red')
+            self.clusterError.grid(row=3, column=1)
+        else:
+            self.clusterError.destroy()
+
+    # Functions
     def openFile(self):
         self.filePath.set(askopenfilename())
 
     def preProcessData(self):
-        self.dataSet=pd.read_excel(self.filePath.get())
-        print(self.dataSet)
-        self.DataFrame = preProcessData(self.dataSet)
-        print(self.DataFrame)
-        messagebox.showinfo(title='K Means Clustering', message="Preprocessing completed successfully!")
-        self.clustersInput.config(state=NORMAL)
-        self.runsInput.config(state=NORMAL)
+        try:
+            self.dataSet=pd.read_excel(self.filePath.get())
+            print(self.dataSet)
+            self.DataFrame = preProcessData(self.dataSet)
+            print(self.DataFrame)
+            messagebox.showinfo(title='K Means Clustering', message="Preprocessing completed successfully!")
+            self.clustersInput.config(state=NORMAL)
+            self.runsInput.config(state=NORMAL)
+            self.clusterBtn.config(state=NORMAL)
+        except FileNotFoundError:
+            messagebox.showerror(title='File Not Found', message='Please choose an existing datafile')
 
     def buildModal(self):
         self.lbl = Label(self.master, text="Build Modal...")
