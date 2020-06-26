@@ -15,7 +15,8 @@ class kMeans(object):
 
     @staticmethod
     def scatter(df,path):
-        plt.scatter(x=df['Generosity'], y=df['Social support'], c=df['k_means'], label=df['k_means'])
+        plt.scatter(x=df['Generosity'], y=df['Social support'], c=df['k_means'].tolist(), label=df['k_means'])
+        plt.title('K Means Clustering')
         plt.xlabel('Generosity')
         plt.ylabel('Social support')
         plt.savefig(os.path.dirname(path)+'/scatter.png')
@@ -34,6 +35,6 @@ class kMeans(object):
             if(Found==False):
                 print(row1.name)
         df['countriesCodes']=countriesCodes
-        fig = px.choropleth(df,locations='countriesCodes',color='k_means',color_continuous_scale=px.colors.sequential.Plasma)
+        fig = px.choropleth(df,locations='countriesCodes',color='k_means',color_continuous_scale=px.colors.sequential.Plasma, title='K Means Clustering Visualization')
         py.sign_in('dorelkab', 'XcEuEweWhBEW7z5ltW5Q')
         py.image.save_as(fig, filename=os.path.dirname(path)+'/choropleth.png');

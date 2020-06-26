@@ -15,7 +15,7 @@ from kmeans import *
 class Application:
     def __init__(self, master):
         self.master = master
-        master.title("Assignment4")
+        master.title("K Means Clustering")
 
         self.pathLabel = Label(master, text='File Path')
         self.filePath = StringVar()
@@ -25,10 +25,10 @@ class Application:
         self.browseInput=Entry(master,width=50,borderwidth=1, textvariable=self.filePath)
         self.browseInput.grid(row=1,column=0)
 
-        self.clustersInput=Entry(master,width=30,borderwidth=1, textvariable=self.nClusters)
+        self.clustersInput=Entry(master,width=30,borderwidth=1, textvariable=self.nClusters, state=DISABLED)
         self.clustersInput.grid(row=3,column=0)
 
-        self.runsInput=Entry(master,width=30,borderwidth=1, textvariable=self.nInit)
+        self.runsInput=Entry(master,width=30,borderwidth=1, textvariable=self.nInit, state=DISABLED)
         self.runsInput.grid(row=5,column=0)
 
         # Create a Label Widget
@@ -52,6 +52,8 @@ class Application:
         self.DataFrame = preProcessData(self.dataSet)
         print(self.DataFrame)
         messagebox.showinfo(title='K Means Clustering', message="Preprocessing completed successfully!")
+        self.clustersInput.config(state=NORMAL)
+        self.runsInput.config(state=NORMAL)
 
     def buildModal(self):
         self.lbl = Label(self.master, text="Build Modal...")
@@ -70,6 +72,10 @@ class Application:
         self.choropleth = Label(self.master, image=choroplethImg)
         self.choropleth.grid(row=8, column=0)
         self.choropleth.image = choroplethImg
+        messagebox.showinfo(title='K Means Clustering', message="K Means Clustering completed successfully!")
+
+    def exit(self):
+        self.master.destroy()
 
 root = Tk()
 my_gui=Application(root)
