@@ -27,9 +27,13 @@ class Application:
 
         self.clustersInput=Entry(master,width=30,borderwidth=1, textvariable=self.nClusters, state=DISABLED)
         self.clustersInput.grid(row=3,column=0)
+        self.reg1 = self.master.register(self.clustersInputValidation)
+        self.clustersInput.config(validate="key", validatecommand=(self.reg1, '%P'))
 
         self.runsInput=Entry(master,width=30,borderwidth=1, textvariable=self.nInit, state=DISABLED)
         self.runsInput.grid(row=5,column=0)
+        self.reg2 = self.master.register(self.runsInputValidation)
+        self.runsInput.config(validate="key", validatecommand=(self.reg2, '%P'))
 
         # Create a Label Widget
         self.pathChooseLbl=Label(master,text="Please enter dataset path:").grid(row=0,column=0)
@@ -43,15 +47,68 @@ class Application:
         self.dataSet = None
         self.DataFrame = None
 
+        self.clusterError1 = Label()
+        self.clusterError2 = Label()
+        self.btnCheck1 = False
+        self.btnCheck2 = False
+
     def clustersInputValidation(self,input):
         if not input:
-            self.clusterError = Label(self.master, text="Cannot be empty", fg='red')
-            self.clusterError.grid(row=3, column=1)
+            self.clusterError1.destroy()
+            self.clusterError1 = Label(self.master, text="Cannot be empty", fg='red')
+            self.clusterError1.grid(row=3, column=1)
+            self.btnCheck1 = False
+            self.clusterBtn.config(state=DISABLED)
+            return True
+        elif(not input.isdigit()):
+            self.clusterError1.destroy()
+            self.clusterError1 = Label(self.master, text="Text must consist of digits only", fg='red')
+            self.clusterError1.grid(row=3, column=1)
+            self.btnCheck1 = False
+            self.clusterBtn.config(state=DISABLED)
+            return True
         elif(int(input)<2):
-            self.clusterError = Label(self.master, text="Cannot be empty", fg='red')
-            self.clusterError.grid(row=3, column=1)
+            self.clusterError1.destroy()
+            self.clusterError1 = Label(self.master, text="Value cannot be smaller then 2", fg='red')
+            self.clusterError1.grid(row=3, column=1)
+            self.btnCheck1 = False
+            self.clusterBtn.config(state=DISABLED)
+            return True
         else:
-            self.clusterError.destroy()
+            self.clusterError1.destroy()
+            self.btnCheck1 = True
+            if(self.btnCheck2 == True):
+                self.clusterBtn.config(state=NORMAL)
+            return True
+
+    def runsInputValidation(self,input):
+        if not input:
+            self.clusterError2.destroy()
+            self.clusterError2 = Label(self.master, text="Cannot be empty", fg='red')
+            self.clusterError2.grid(row=5, column=1)
+            self.btnCheck2 = False
+            self.clusterBtn.config(state=DISABLED)
+            return True
+        elif (not input.isdigit()):
+            self.clusterError2.destroy()
+            self.clusterError2 = Label(self.master, text="Text must consist of digits only", fg='red')
+            self.clusterError2.grid(row=5, column=1)
+            self.btnCheck2 = False
+            self.clusterBtn.config(state=DISABLED)
+            return True
+        elif (int(input) <= 0):
+            self.clusterError2.destroy()
+            self.clusterError2 = Label(self.master, text="Value cannot be smaller then 0", fg='red')
+            self.clusterError2.grid(row=5, column=1)
+            self.btnCheck2 = False
+            self.clusterBtn.config(state=DISABLED)
+            return True
+        else:
+            self.clusterError2.destroy()
+            self.btnCheck2 = True
+            if (self.btnCheck1 == True):
+                self.clusterBtn.config(state=NORMAL)
+            return True
 
     # Functions
     def openFile(self):
@@ -66,7 +123,6 @@ class Application:
             messagebox.showinfo(title='K Means Clustering', message="Preprocessing completed successfully!")
             self.clustersInput.config(state=NORMAL)
             self.runsInput.config(state=NORMAL)
-            self.clusterBtn.config(state=NORMAL)
         except FileNotFoundError:
             messagebox.showerror(title='File Not Found', message='Please choose an existing datafile')
 
