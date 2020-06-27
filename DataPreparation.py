@@ -7,9 +7,9 @@ def preProcessData(DataFrame):
     numericType = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
     cols = DataFrame.select_dtypes(include=numericType).columns.tolist()
     for col in cols:
-        # Fill NA Values with Average of column
+        # fill null cells with avrage value of the col
         DataFrame[col].fillna(DataFrame[col].mean(), inplace=True)
-        # Standardization
+        # standardization
         DataFrame[cols] = scaler.fit_transform(DataFrame[cols])
 
     countries = DataFrame['country']
